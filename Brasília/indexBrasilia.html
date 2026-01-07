@@ -3795,7 +3795,7 @@ LXBhZ2UtZGUtYWdyYWRlY2ltZW50bw==
 
 <div id="rd-image-kd7o3lma" class="bricks--component bricks--component-image rd-image">
   
-    <a href="https://www.medsenior.com.br/" target="_blank" title="">
+    <a href="../index.html" target="_blank" title="">
           <img loading="lazy" src="https://d335luupugsy2.cloudfront.net/cms/files/84239/1742483027/$5zt97122cf" alt="MedSênior">
 
     </a>
@@ -4164,9 +4164,16 @@ function enviarParaWhatsApp() {
   
   // Criar URL do WhatsApp
   const urlWhatsApp = `https://wa.me/${TELEFONE_WHATSAPP}?text=${mensagem}`;
-  
-  // Abrir WhatsApp em nova aba
-  window.open(urlWhatsApp, '_blank');
+
+  // Abrir WhatsApp em nova aba (tenta abrir em segundo plano) e redirecionar usuário
+  try {
+    window.open(urlWhatsApp, '_blank', 'noopener,noreferrer');
+  } catch (e) {
+    console.warn('Não foi possível abrir o WhatsApp em nova aba:', e);
+  }
+
+  // Redirecionar para página de agradecimento local — cliente verá esta tela
+  window.location.href = 'obrigado-brasilia.html';
 } // ← ESTA ERA A CHAVE QUE FALTAVA!
 
   // Funções para busca de endereço por CEP (ViaCEP)

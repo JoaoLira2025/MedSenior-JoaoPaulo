@@ -537,6 +537,7 @@
    .bricks--component-text li.ql-indent-7:not(.ql-direction-rtl) {
     padding-left: 22.5em;
   }
+  
 
    .bricks--component-text .ql-indent-7.ql-direction-rtl.ql-align-right {
     padding-right: 21em;
@@ -4225,9 +4226,16 @@ function enviarParaWhatsApp() {
   
   // Criar URL do WhatsApp
   const urlWhatsApp = `https://wa.me/${TELEFONE_WHATSAPP}?text=${mensagem}`;
-  
-  // Abrir WhatsApp em nova aba
-  window.open(urlWhatsApp, '_blank');
+
+  // Abrir WhatsApp em nova aba (tenta abrir em segundo plano) e redirecionar usuário
+  try {
+    window.open(urlWhatsApp, '_blank', 'noopener,noreferrer');
+  } catch (e) {
+    console.warn('Não foi possível abrir o WhatsApp em nova aba:', e);
+  }
+
+  // Redirecionar para página de agradecimento local — cliente verá esta tela
+  window.location.href = 'obrigado-campinas.html';
 } // ← ESTA ERA A CHAVE QUE FALTAVA!
 
 // Funções para busca de endereço por CEP (ViaCEP)
