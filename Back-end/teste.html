@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>Teste seu Backend</h2>
+  <button onclick="testarBackend()">Testar Conexão</button>
+  <div id="resultado"></div>
+  
+  <script>
+    async function testarBackend() {
+      const response = await fetch('http://localhost:3000/enviar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome: "Teste", telefone: "11999999999" })
+      });
+      const data = await response.json();
+      document.getElementById('resultado').innerHTML = 
+        `<p>✅ Backend respondeu: ${JSON.stringify(data)}</p>`;
+    }
+  </script>
+</body>
+</html>

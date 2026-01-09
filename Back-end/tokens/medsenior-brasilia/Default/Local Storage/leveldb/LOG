@@ -1,0 +1,18 @@
+2026/01/09-16:36:49.222 138c Reusing MANIFEST C:\Users\Lenovo\Desktop\MedSênior-JoãoPaulo\Back-end\tokens\medsenior-brasilia\Default\Local Storage\leveldb/MANIFEST-000001
+2026/01/09-16:36:49.229 138c Recovering log #17
+2026/01/09-16:36:49.233 138c Reusing old log C:\Users\Lenovo\Desktop\MedSênior-JoãoPaulo\Back-end\tokens\medsenior-brasilia\Default\Local Storage\leveldb/000017.log 
+2026/01/09-17:15:49.372 5944 Level-0 table #20: started
+2026/01/09-17:15:49.378 5944 Level-0 table #20: 12707 bytes OK
+2026/01/09-17:15:49.380 5944 Delete type=0 #17
+2026/01/09-17:15:49.381 5944 Compacting 4@0 + 1@1 files
+2026/01/09-17:15:49.387 5944 Generated table #21@0: 30 keys, 3103 bytes
+2026/01/09-17:15:49.387 5944 Compacted 4@0 + 1@1 files => 3103 bytes
+2026/01/09-17:15:49.388 5944 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/01/09-17:15:49.389 5944 Delete type=2 #8
+2026/01/09-17:15:49.389 5944 Delete type=2 #11
+2026/01/09-17:15:49.389 5944 Delete type=2 #14
+2026/01/09-17:15:49.389 5944 Delete type=2 #16
+2026/01/09-17:15:49.389 5944 Delete type=2 #20
+2026/01/09-18:32:49.362 5944 Level-0 table #23: started
+2026/01/09-18:32:49.366 5944 Level-0 table #23: 13160 bytes OK
+2026/01/09-18:32:49.368 5944 Delete type=0 #19

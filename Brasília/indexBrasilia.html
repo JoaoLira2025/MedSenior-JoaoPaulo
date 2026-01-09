@@ -1490,7 +1490,7 @@ LXBhZ2UtZGUtYWdyYWRlY2ltZW50bw==
   <button type="button" 
           class="bricks--component bricks--component-button rd-button" 
           id="whatsapp-submit-button" 
-          onclick="enviarParaWhatsApp()"
+          onclick="enviarParaWhatsApp(event)"
           style="display: flex; flex-direction: column; align-self: center; background-color: #e69732; border: none; border-radius: 30px; color: #ffffff; cursor: pointer; font-family: Lato, sans-serif; font-size: 18px; font-weight: bold; height: 50px; justify-content: center; line-height: 1.42857; margin-bottom: 0px; margin-top: 0px; max-width: 270px; text-align: center; text-decoration: none; width: 100%; padding: 0.66em 10px;">
     SOLICITAR PROPOSTA
   </button>
@@ -4082,162 +4082,259 @@ src="https://www.facebook.com/tr?id=440254031627726&ev=PageView&noscript=1"
     </style>
 
 <script>
-// Defina o número de telefone do destinatário (com código do país, sem +)
-const TELEFONE_WHATSAPP = '5561995359962'; // Substitua pelo seu número
-
-function enviarParaWhatsApp() {
-  // Coletar TODOS os dados do formulário
-  const nome = document.getElementById('rd-text_field-4gAaPYUOhdiINFXSAtUs9g')?.value || '';
-  const idade = document.getElementById('rd-age_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
-  const cpf = document.getElementById('rd-cpf_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
-  const cep = document.getElementById('rd-cep_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
-  const endereco = document.getElementById('rd-house_number_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
-  const numeroCasa = document.getElementById('rd-house_number_field-number-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
-  const complemento = document.getElementById('rd-complement_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
-  const email = document.getElementById('rd-email_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
-  const telefone = document.getElementById('rd-phone_field-18PLLJCazAyfwkPe4agEEw')?.value || '';
-  const estadoAtendimento = document.getElementById('rd-select_field-YrgjKHqi9zd1Qb5qezd2cQ')?.value || '';
-  const estadoCivil = document.getElementById('rd-select_field-ffrzWVMcZd-14pnxIvy4yA')?.value || '';
+// ================= FUNÇÃO PRINCIPAL - ENVIA PARA BACKEND (RODÍZIO NO BACKEND) =================
+async function enviarParaWhatsApp(event) {
+  // ⭐⭐ DEBUG: Verifica se está entrando múltiplas vezes
+  console.log('🎯 FUNÇÃO CHAMADA - Hora:', new Date().toISOString().split('T')[1].split('.')[0]);
   
-  // NOVOS CAMPOS - Adicionados para coleta
-  const cnpj = document.getElementById('rd-cnpj_field')?.value || '';
-  const observacoes = document.getElementById('rd-observations_field')?.value || '';
-  
-  // Coletar consentimento de comunicações
-  const consentComunicacoes = document.getElementById('rd-checkbox_field-m9hctth5')?.checked ? 'Sim' : 'Não';
-  
-  // Validar campos obrigatórios
-  const camposObrigatorios = [
-    { campo: nome, nome: 'Nome' },
-    { campo: idade, nome: 'Idade' },
-    { campo: cpf, nome: 'CPF' },
-    { campo: cep, nome: 'CEP' },
-    { campo: endereco, nome: 'Endereço' },
-    { campo: numeroCasa, nome: 'Número da Casa' },
-    { campo: email, nome: 'Email' },
-    { campo: telefone, nome: 'Telefone' },
-    { campo: estadoAtendimento, nome: 'Estado para Atendimento' },
-    { campo: estadoCivil, nome: 'Estado Civil' },
-    { campo: cnpj, nome: 'Possui CNPJ?' }
-  ];
-  
-  const camposFaltantes = camposObrigatorios.filter(item => !item.campo.trim());
-  
-  if (camposFaltantes.length > 0) {
-    const mensagemErro = `Por favor, preencha os seguintes campos obrigatórios:\n${camposFaltantes.map(item => `• ${item.nome}`).join('\n')}`;
-    alert(mensagemErro);
-    return;
+  // ⭐⭐ BLOQUEIO ANTIDUPLICATAS
+  if (window.leadBloqueado) {
+    console.log('🚫 BLOQUEADO: Já está enviando! Ignorando clique...');
+    if (event) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+    return false;
   }
   
-  // Formatar mensagem para WhatsApp com todos os campos
-  const mensagem = `*NOVA SOLICITAÇÃO DE PROPOSTA MEDSÊNIOR - BRASÍLIA*%0A%0A` +
-                   `*INFORMAÇÕES PESSOAIS:*%0A` +
-                   ` *Nome:* ${nome}%0A` +
-                   `*Idade:* ${idade}%0A` +
-                   ` *CPF:* ${cpf}%0A` +
-                   `*Estado Civil:* ${estadoCivil}%0A` +
-                   ` *Possui CNPJ?* ${cnpj}%0A%0A` +
-                   
-                   `*CONTATO:*%0A` +
-                   ` *Email:* ${email}%0A` +
-                   ` *Telefone:* ${telefone}%0A%0A` +
-                   
-                   `*ENDEREÇO:*%0A` +
-                   ` *CEP:* ${cep}%0A` +
-                   ` *Endereço:* ${endereco}%0A` +
-                   ` *Número da Casa:* ${numeroCasa}%0A` +
-                   ` *Complemento:* ${complemento ? complemento : '—'}%0A%0A` +
-                   
-                   `*PLANO E ATENDIMENTO:*%0A` +
-                   ` *Estado para Atendimento:* ${estadoAtendimento}%0A` +
-                   ` *Aceita receber comunicações?* ${consentComunicacoes}%0A%0A` +
-                   
-                   `*OBSERVAÇÕES ADICIONAIS:*%0A` +
-                   `${observacoes ? observacoes.replace(/\n/g, '%0A') : 'Nenhuma observação adicional.'}%0A%0A` +
-                   
-                   `*DATA E HORA DA SOLICITAÇÃO:*%0A` +
-                   ` *Data:* ${new Date().toLocaleDateString('pt-BR')}%0A` +
-                   ` *Hora:* ${new Date().toLocaleTimeString('pt-BR')}%0A%0A` +
-                   
-                   `*ORIGEM:* Landpage Brasília%0A` +
-                   ` *Enviado automaticamente via formulário online*`;
+  // ⭐⭐ BLOQUEIA IMEDIATAMENTE
+  window.leadBloqueado = true;
+  console.log('🔒 Bloqueando novos envios...');
   
-  // Criar URL do WhatsApp
-  const urlWhatsApp = `https://wa.me/${TELEFONE_WHATSAPP}?text=${mensagem}`;
-
-  // Abrir WhatsApp em nova aba (tenta abrir em segundo plano) e redirecionar usuário
+  // Previne comportamento padrão
+  if (event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    console.log('✅ Comportamento padrão prevenido');
+  }
+  
+  // ⭐⭐ DESABILITA BOTÃO VISUALMENTE
+  const botao = document.getElementById('whatsapp-submit-button');
+  if (botao) {
+    const textoOriginal = botao.textContent;
+    botao.textContent = 'ENVIANDO...';
+    botao.disabled = true;
+    botao.style.opacity = '0.7';
+    botao.style.cursor = 'not-allowed';
+    console.log('✅ Botão desabilitado');
+    
+    // Restaura texto original após 5 segundos se houver erro
+    setTimeout(() => {
+      botao.textContent = textoOriginal;
+    }, 5000);
+  }
+  
   try {
-    window.open(urlWhatsApp, '_blank', 'noopener,noreferrer');
-  } catch (e) {
-    console.warn('Não foi possível abrir o WhatsApp em nova aba:', e);
-  }
-
-  // Redirecionar para página de agradecimento local — cliente verá esta tela
-  window.location.href = 'obrigado-brasilia.html';
-} // ← ESTA ERA A CHAVE QUE FALTAVA!
-
-  // Funções para busca de endereço por CEP (ViaCEP)
-  function limparEndereco() {
-    const enderecoField = document.getElementById('rd-house_number_field-HVJ6OQDfosiUXcA3M6uz0Q');
-    const complementoField = document.getElementById('rd-complement_field-HVJ6OQDfosiUXcA3M6uz0Q');
-    if (enderecoField) enderecoField.value = '';
-    if (complementoField) complementoField.value = '';
-  }
-
-  function preencherEndereco(dados) {
-    const enderecoField = document.getElementById('rd-house_number_field-HVJ6OQDfosiUXcA3M6uz0Q');
-    const complementoField = document.getElementById('rd-complement_field-HVJ6OQDfosiUXcA3M6uz0Q');
-    if (enderecoField) {
-      const logradouro = dados.logradouro ? dados.logradouro : '';
-      const bairro = dados.bairro ? ` - ${dados.bairro}` : '';
-      const localidade = dados.localidade ? ` - ${dados.localidade}/${dados.uf}` : '';
-      enderecoField.value = `${logradouro}${bairro}${localidade}`.replace(/^\s*-?\s*/, '');
-    }
-    if (complementoField) complementoField.value = dados.complemento || '';
-  }
-
-  async function buscarCep(cep) {
-    const cepOnly = (cep || '').replace(/\D/g, '');
-    if (!cepOnly || cepOnly.length !== 8) return;
-    try {
-      const res = await fetch(`https://viacep.com.br/ws/${cepOnly}/json/`);
-      if (!res.ok) throw new Error('Erro ao consultar ViaCEP');
-      const data = await res.json();
-      if (data.erro) {
-        limparEndereco();
-        alert('CEP não encontrado. Verifique e tente novamente.');
-        return;
+    // ================= COLETA DE DADOS =================
+    console.log('📋 Coletando dados do formulário...');
+    
+    const nome = document.getElementById('rd-text_field-4gAaPYUOhdiINFXSAtUs9g')?.value || '';
+    const idade = document.getElementById('rd-age_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
+    const cpf = document.getElementById('rd-cpf_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
+    const cep = document.getElementById('rd-cep_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
+    const endereco = document.getElementById('rd-house_number_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
+    const numeroCasa = document.getElementById('rd-house_number_field-number-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
+    const complemento = document.getElementById('rd-complement_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
+    const email = document.getElementById('rd-email_field-HVJ6OQDfosiUXcA3M6uz0Q')?.value || '';
+    const telefone = document.getElementById('rd-phone_field-18PLLJCazAyfwkPe4agEEw')?.value || '';
+    const estadoAtendimento = document.getElementById('rd-select_field-YrgjKHqi9zd1Qb5qezd2cQ')?.value || '';
+    const estadoCivil = document.getElementById('rd-select_field-ffrzWVMcZd-14pnxIvy4yA')?.value || '';
+    const cnpj = document.getElementById('rd-cnpj_field')?.value || '';
+    const observacoes = document.getElementById('rd-observations_field')?.value || '';
+    
+    console.log('✅ Dados coletados:', { nome, telefone, email });
+    
+    // ================= VALIDAÇÃO =================
+    const camposObrigatorios = [
+      { campo: nome, nome: 'Nome' },
+      { campo: idade, nome: 'Idade' },
+      { campo: cpf, nome: 'CPF' },
+      { campo: cep, nome: 'CEP' },
+      { campo: endereco, nome: 'Endereço' },
+      { campo: numeroCasa, nome: 'Número da Casa' },
+      { campo: email, nome: 'Email' },
+      { campo: telefone, nome: 'Telefone' },
+      { campo: estadoAtendimento, nome: 'Estado para Atendimento' },
+      { campo: estadoCivil, nome: 'Estado Civil' },
+      { campo: cnpj, nome: 'Possui CNPJ?' }
+    ];
+    
+    const camposFaltantes = camposObrigatorios.filter(item => !item.campo.trim());
+    
+    if (camposFaltantes.length > 0) {
+      const mensagemErro = `Por favor, preencha os seguintes campos obrigatórios:\n${camposFaltantes.map(item => `• ${item.nome}`).join('\n')}`;
+      alert(mensagemErro);
+      // Desbloqueia para novo envio
+      window.leadBloqueado = false;
+      if (botao) {
+        botao.disabled = false;
+        botao.textContent = 'SOLICITAR PROPOSTA';
+        botao.style.opacity = '1';
+        botao.style.cursor = 'pointer';
       }
-      preencherEndereco(data);
-      // Coloca o foco no campo número da casa para facilitar preenchimento
-      const numeroField = document.getElementById('rd-house_number_field-number-HVJ6OQDfosiUXcA3M6uz0Q');
-      if (numeroField) numeroField.focus();
-    } catch (err) {
-      console.error('Erro ao buscar CEP:', err);
+      console.log('❌ Validação falhou:', camposFaltantes.map(f => f.nome));
+      return;
     }
-  }
-
-  function debounce(fn, delay) {
-    let timer = null;
-    return function (...args) {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), delay);
-    };
-  }
-
-  // Configurar evento de clique no botão e listeners de CEP
-  document.addEventListener('DOMContentLoaded', function() {
-  const botaoWhatsApp = document.getElementById('whatsapp-submit-button');
-  const formOriginal = document.getElementById('conversion-form');
-  
-  if (botaoWhatsApp) {
-    botaoWhatsApp.addEventListener('click', function(e) {
-      e.preventDefault();
-      enviarParaWhatsApp();
+    
+    console.log('✅ Validação OK');
+    
+    // ⭐⭐ IMPORTANTE: NÃO ESCOLHE ATENDENTE AQUI!
+    // O backend fará o rodízio automaticamente
+    console.log('🔄 O BACKEND escolherá o atendente (sistema de rodízio)');
+    
+    // ================= ENVIA PARA BACKEND QUE FAZ O RODÍZIO =================
+    console.log('🚀 Enviando para backend (rodízio automático)...');
+    
+    const resposta = await fetch('http://localhost:3000/enviar-lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nome, idade, cpf, cep, endereco, numeroCasa, complemento,
+        email, telefone, estadoAtendimento, estadoCivil, cnpj, observacoes,
+        // ⭐⭐ NÃO envie atendente nem whatsappDestino - backend decide
+        origem: 'Landpage Brasília',
+        dataEnvio: new Date().toISOString()
+      })
     });
+    
+    const resultado = await resposta.json();
+    console.log('✅ Backend respondeu:', resultado);
+    
+    if (resultado.success) {
+      console.log('🎉 Lead enviado com sucesso!');
+      console.log(`👤 Atendente designado: ${resultado.atendenteDesignado}`);
+      console.log(`📞 WhatsApp destino: ${resultado.whatsappDestino}`);
+      console.log(`🔄 Próximo atendente: ${resultado.proximoAtendente}`);
+      
+      // Atualiza botão para sucesso
+      if (botao) {
+        botao.textContent = '✅ ENVIADO!';
+        botao.style.backgroundColor = '#4aa455';
+        botao.style.opacity = '1';
+      }
+      
+      // Redireciona para página de agradecimento
+      setTimeout(() => {
+        window.location.href = 'obrigado-brasilia.html';
+      }, 1500);
+    } else {
+      throw new Error('Erro no backend: ' + (resultado.error || 'Desconhecido'));
+    }
+    
+  } catch (error) {
+    console.error('❌ Erro ao enviar para backend:', error);
+    
+    // Mostra mensagem amigável
+    alert('Sistema temporariamente indisponível. Por favor, tente novamente em alguns segundos.');
+    
+    // Restaura botão
+    window.leadBloqueado = false;
+    if (botao) {
+      botao.disabled = false;
+      botao.textContent = 'TENTAR NOVAMENTE';
+      botao.style.opacity = '1';
+      botao.style.cursor = 'pointer';
+      botao.style.backgroundColor = '#e69732'; // Volta cor original
+    }
+    
+  } finally {
+    // ================= DESBLOQUEIA APÓS 3 SEGUNDOS =================
+    setTimeout(() => {
+      window.leadBloqueado = false;
+      console.log('🔓 Sistema desbloqueado - pronto para novo envio');
+    }, 3000);
   }
+  
+  return false;
+}
 
-  // Listener para preencher endereço automaticamente ao digitar o CEP
+// ================= FUNÇÕES DE CEP =================
+function limparEndereco() {
+  const enderecoField = document.getElementById('rd-house_number_field-HVJ6OQDfosiUXcA3M6uz0Q');
+  const complementoField = document.getElementById('rd-complement_field-HVJ6OQDfosiUXcA3M6uz0Q');
+  if (enderecoField) enderecoField.value = '';
+  if (complementoField) complementoField.value = '';
+}
+
+function preencherEndereco(dados) {
+  const enderecoField = document.getElementById('rd-house_number_field-HVJ6OQDfosiUXcA3M6uz0Q');
+  const complementoField = document.getElementById('rd-complement_field-HVJ6OQDfosiUXcA3M6uz0Q');
+  if (enderecoField) {
+    const logradouro = dados.logradouro ? dados.logradouro : '';
+    const bairro = dados.bairro ? ` - ${dados.bairro}` : '';
+    const localidade = dados.localidade ? ` - ${dados.localidade}/${dados.uf}` : '';
+    enderecoField.value = `${logradouro}${bairro}${localidade}`.replace(/^\s*-?\s*/, '');
+  }
+  if (complementoField) complementoField.value = dados.complemento || '';
+}
+
+async function buscarCep(cep) {
+  const cepOnly = (cep || '').replace(/\D/g, '');
+  if (!cepOnly || cepOnly.length !== 8) return;
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cepOnly}/json/`);
+    if (!res.ok) throw new Error('Erro ao consultar ViaCEP');
+    const data = await res.json();
+    if (data.erro) {
+      limparEndereco();
+      alert('CEP não encontrado. Verifique e tente novamente.');
+      return;
+    }
+    preencherEndereco(data);
+    // Coloca o foco no campo número da casa
+    const numeroField = document.getElementById('rd-house_number_field-number-HVJ6OQDfosiUXcA3M6uz0Q');
+    if (numeroField) numeroField.focus();
+  } catch (err) {
+    console.error('Erro ao buscar CEP:', err);
+  }
+}
+
+function debounce(fn, delay) {
+  let timer = null;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// ================= EVITA DUPLICATAS =================
+(function() {
+  console.log('🔧 Sistema antibloqueio iniciado...');
+  
+  // Inicializa variável de bloqueio
+  window.leadBloqueado = false;
+  
+  // Remove event listeners duplicados do botão
+  const botaoOriginal = document.getElementById('whatsapp-submit-button');
+  if (botaoOriginal) {
+    console.log('✅ Botão encontrado:', botaoOriginal.id);
+    // Remove todos os event listeners antigos
+    const novoBotao = botaoOriginal.cloneNode(true);
+    botaoOriginal.parentNode.replaceChild(novoBotao, botaoOriginal);
+  }
+  
+  // BLOQUEIA formulário do RD Station (se existir)
+  const formRD = document.getElementById('conversion-form');
+  if (formRD) {
+    console.log('✅ Formulário RD encontrado, bloqueando...');
+    formRD.addEventListener('submit', function(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      console.log('🚫 Formulário RD bloqueado no evento submit');
+      return false;
+    }, true);
+  }
+  
+  console.log('✅ Sistema antibloqueio configurado!');
+})();
+
+// ================= CONFIGURAÇÃO DO CEP =================
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('📋 Configurando busca de CEP...');
+  
+  // Configura busca automática de CEP
   const cepField = document.getElementById('rd-cep_field-HVJ6OQDfosiUXcA3M6uz0Q');
   if (cepField) {
     const debounced = debounce(function (e) {
@@ -4249,54 +4346,15 @@ function enviarParaWhatsApp() {
       const val = (e.target.value || '').replace(/\D/g, '');
       if (val.length === 8) buscarCep(val);
     });
+    console.log('✅ Busca de CEP configurada');
   }
-});
-
-// Função opcional para validar campos em tempo real
-function validarCampoEmTempoReal(campoId, tipo) {
-  const campo = document.getElementById(campoId);
-  if (!campo) return;
   
-  campo.addEventListener('blur', function() {
-    const valor = this.value.trim();
-    
-    if (!valor && this.hasAttribute('required')) {
-      this.classList.add('error');
-      this.style.borderColor = 'red';
-    } else {
-      this.classList.remove('error');
-      this.style.borderColor = '';
-      
-      // Validações específicas
-      if (tipo === 'email' && valor) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(valor)) {
-          this.classList.add('error');
-          this.style.borderColor = 'red';
-        }
-      }
-      
-      if (tipo === 'cpf' && valor.length === 14) { // CPF com máscara
-        // Adicione validação de CPF aqui se necessário
-      }
-      
-      if (tipo === 'cep' && valor.length === 9) { // CEP com máscara
-        // Pode fazer busca automática de endereço aqui
-      }
-    }
-  });
-}
-
-// Ativar validações em tempo real (opcional)
-document.addEventListener('DOMContentLoaded', function() {
-  // Validações específicas por tipo de campo
-  validarCampoEmTempoReal('rd-text_field-4gAaPYUOhdiINFXSAtUs9g', 'text');
-  validarCampoEmTempoReal('rd-email_field-HVJ6OQDfosiUXcA3M6uz0Q', 'email');
-  validarCampoEmTempoReal('rd-cpf_field-HVJ6OQDfosiUXcA3M6uz0Q', 'cpf');
-  validarCampoEmTempoReal('rd-cep_field-HVJ6OQDfosiUXcA3M6uz0Q', 'cep');
-  validarCampoEmTempoReal('rd-phone_field-18PLLJCazAyfwkPe4agEEw', 'phone');
+  // Testa conexão com backend
+  console.log('🔍 Testando sistema...');
+  console.log('✅ Função enviarParaWhatsApp disponível:', typeof enviarParaWhatsApp === 'function');
+  console.log('ℹ️ Sistema de rodízio: CONTROLADO PELO BACKEND');
 });
 </script>
 
-
-</body></html>
+  </body>
+</html>
